@@ -25,11 +25,19 @@ from sys import argv, exit
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline, UserStatusOffline
 from time import mktime, sleep
-
+import telegram_send
 import telethon.sync
 
 
 DATETIME_FORMAT = '%Y-%m-%d @ %H:%M:%S'
+
+import os
+
+def notify(title, text):
+    os.system("""
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format(text, title))
+
 
 
 def utc2localtime(utc):
@@ -63,6 +71,8 @@ while True:
         elif last_offline != contact.status.was_online:
             if last_offline is not None:
                 print(f'={utc2localtime(contact.status.was_online).strftime(DATETIME_FORMAT)}: User went offline after being online for short time.')
+                notify("Title", "Heres an alert")
+                telegram_send.send(messages=["comehere"])
             else:
                 print(f'={utc2localtime(contact.status.was_online).strftime(DATETIME_FORMAT)}: User went offline.')
         last_offline = contact.status.was_online
@@ -70,6 +80,8 @@ while True:
         if online != True:
             online = True
             print(f'~{datetime.now().strftime(DATETIME_FORMAT)}: User went online.')
+            notify("Title", "Heres an alert")
+            telegram_send.send(messages=["comehere"])
     else:
         if online != False:
             online = False
